@@ -13,7 +13,9 @@
     "type": "commonjs",
     "dependencies": {
         "dotenv": "^17.2.3",
-        "express": "^4.21.2"
+        "express": "^4.21.2",
+        "mongoose": "^9.3.0",
+        "node-mocks-http": "^1.17.2"
     },
     "devDependencies": {
         "jest": "^30.3.0",
