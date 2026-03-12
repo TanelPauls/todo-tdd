@@ -6,42 +6,43 @@ const allTodos = require('../mock-data/all-todos.json');
 
 TodoModel.create = jest.fn();
 TodoModel.find = jest.fn();
+TodoModel.findById = jest.fn();
 
 let req,res, next;
 beforeEach(()=>{
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
     next = jest.fn();
-})
+});
 
 describe('TodoController.createTodo', () => {
     beforeEach(() => {
         req.body = newTodo;
-    })
+    });
     it('Should have a createTodo function', () => {
         expect(typeof TodoController.createTodo).toBe('function');
-    })
+    });
     it('should call TodoModel.create', ()=>{
         TodoController.createTodo(req, res, next);
         expect(TodoModel.create).toHaveBeenCalledWith(newTodo);
-    })
+    });
     it('should return 201 response code', async ()=>{
         await TodoController.createTodo(req, res, next);
         expect(res.statusCode).toBe(201);
         expect(res._isEndCalled()).toBeTruthy();
-    })
+    });
     it('should return json body in response', async ()=>{
         await TodoModel.create.mockReturnValue(newTodo);
         await TodoController.createTodo(req, res, next);
         expect(res._getJSONData()).toStrictEqual(newTodo);
-    })
+    });
     it("should handle errors", async ()=>{
         const errorMessage = { message: "Done property missing"};
         TodoModel.create.mockRejectedValue(errorMessage);
         await TodoController.createTodo(req, res, next);
         expect(next).toHaveBeenCalledWith(errorMessage);
-    })
-})
+    });
+});
 
 describe('TodoController.getTodos', () =>{
     it("should have a getTodos function", ()=>{
@@ -63,5 +64,23 @@ describe('TodoController.getTodos', () =>{
         TodoModel.find.mockRejectedValue(errorMessage);
         await TodoController.getTodos(req, res, next);
         expect(next).toHaveBeenCalledWith(errorMessage);
+    });
+});
+
+describe('TodoController.getTodoById', () =>{
+    it("should have a getTodoById", ()=>{
+        expect(typeof TodoController.getTodoById).toBe('function');
+    });
+    it("should call TodoModel.findById with route parameters", async() => {
+        req.params.todoId = "69b2826a45796a37a741e1a0";
+        await TodoController.getTodoById(req, res, next);
+        expect(TodoModel.findById).toHaveBeenCalledWith("69b2826a45796a37a741e1a0");
+    });
+    it("should return json body and response code 200", async () => {
+        TodoModel.findById.mockReturnValue(newTodo);
+        await TodoController.getTodoById(req, res, next);
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSONData()).toStrictEqual(newTodo);
+        expect(res._isEndCalled()).toBeTruthy();
     })
-})
+});
