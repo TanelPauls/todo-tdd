@@ -24,7 +24,7 @@ const getTodoById = async (req, res, next) => {
         if(todoModel) {
             res.status(200).json(todoModel);
         } else {
-            res.status(404).send();
+            res.status(404).json({message: "This ID is not in database"});
         }
         
     } catch (error) {
