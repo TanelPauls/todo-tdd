@@ -82,5 +82,17 @@ describe('TodoController.getTodoById', () =>{
         expect(res.statusCode).toBe(200);
         expect(res._getJSONData()).toStrictEqual(newTodo);
         expect(res._isEndCalled()).toBeTruthy();
-    })
+    });
+    it("should do error handling", async () => {
+        const errorMessage = { message: "Error retrieving todoModel" };
+        TodoModel.findById.mockRejectedValue(errorMessage);
+        await TodoController.getTodoById(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    });
+    it("should return 404 when item doesnt exist", async () => {
+        TodoModel.findById.mockReturnValue(null);
+        await TodoController.getTodoById(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled()).toBeTruthy();
+    });
 });
