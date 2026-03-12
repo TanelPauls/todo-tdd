@@ -1,12 +1,16 @@
-const express = require ('express');
+const express = require('express');
+const todoRoutes = require("./routes/todo.routes.js");
 const app = express();
+const mongodb=require("./mongodb/mongodb.connect.js");
+
+mongodb.connect();
+
+app.use(express.json());
+
+app.use("/todos", todoRoutes);
 
 app.get("/", (req, res) => {
     res.send('express test')
 })
 
-const port = 3111;
-
-app.listen(port, "0.0.0.0", ()=>{
-    console.log(`App is started at http://localhost:${port}`);
-})
+module.exports = app
