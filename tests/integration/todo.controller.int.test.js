@@ -44,7 +44,7 @@ describe(endpointUrl, () => {
         expect(response.body.title).toBe(firstTodo.title);
         expect(response.body.done).toBe(firstTodo.done);
     });
-    it("Get tobody id doesn't exist" + endpointUrl + "todoId", async () => {
+    it("Get tobo dy id doesn't exist" + endpointUrl + "todoId", async () => {
         const response = await request(app).get(endpointUrl + notExisitingTodoId);
         expect(response.statusCode).toBe(404);
     });
@@ -58,5 +58,17 @@ describe(endpointUrl, () => {
     it("should return 404 on PUT " + endpointUrl, async() => {
         const res = await request(app).put(endpointUrl + notExisitingTodoId).send(testData);
         expect(res.statusCode).toBe(404);
-    })
+    });
+    it("DELETE " + endpointUrl, async () => {
+        const res = await request(app).delete(endpointUrl + newTodoId);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.title).toBe(testData.title);
+        expect(res.body.done).toBe(testData.done);
+        const check = await request(app).get(endpointUrl + newTodoId);
+        expect(check.statusCode).toBe(404);
+    });
+    it("should return 404 on DELETE " + endpointUrl, async () => {
+        const res = await request(app).delete(endpointUrl + notExisitingTodoId);
+        expect(res.statusCode).toBe(404);
+    });
 })
