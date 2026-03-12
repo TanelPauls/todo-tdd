@@ -9,29 +9,34 @@ let req,res, next;
 beforeEach(()=>{
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
-    next = null;
+    next = jest.fn();
 })
-        
 
 describe('TodoController.createTodo', () => {
     beforeEach(() => {
         req.body = newTodo;
     })
     it('Should have a createTodo function', () => {
-        expect(typeof TodoController.createTodo).toBe('function')
+        expect(typeof TodoController.createTodo).toBe('function');
     })
     it('should call TodoModel.create', ()=>{
-        TodoController.createTodo(req, res, next)
-        expect(TodoModel.create).toHaveBeenCalledWith(newTodo)
+        TodoController.createTodo(req, res, next);
+        expect(TodoModel.create).toHaveBeenCalledWith(newTodo);
     })
     it('should return 201 response code', async ()=>{
-        await TodoController.createTodo(req, res, next)
-        expect(res.statusCode).toBe(201)
-        expect(res._isEndCalled()).toBeTruthy()
+        await TodoController.createTodo(req, res, next);
+        expect(res.statusCode).toBe(201);
+        expect(res._isEndCalled()).toBeTruthy();
     })
     it('should return json body in response', async ()=>{
-        await TodoModel.create.mockReturnValue(newTodo)
-        await TodoController.createTodo(req, res, next)
-        expect(res._getJSONData()).toStrictEqual(newTodo)
+        await TodoModel.create.mockReturnValue(newTodo);
+        await TodoController.createTodo(req, res, next);
+        expect(res._getJSONData()).toStrictEqual(newTodo);
+    })
+    it("should handle errors", async ()=>{
+        const errorMessage = { message: "Done property missing"};
+        TodoModel.create.mockRejectedValue(errorMessage);
+        await TodoController.createTodo(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
     })
 })
